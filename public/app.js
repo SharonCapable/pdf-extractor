@@ -216,60 +216,61 @@ function displayResult(result) {
 
     metadataGrid.innerHTML = `
         <div class="stat-card">
-            <div class="stat-label">Format</div>
-            <div class="stat-value">${result.metadata?.documentType?.toUpperCase() || 'N/A'}</div>
-            <div style="font-size: 0.65rem; color: #555; margin-top: 5px;">${fileSize}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Neural Inference</div>
-            <div class="stat-value" style="color: #fff;">${result.metadata?.inferredType || 'In Review'}</div>
-            <div style="font-size: 0.65rem; color: #555; margin-top: 5px;">Entropy Level: Low</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Confidence</div>
-            <div class="stat-value">${result.content?.confidence ? (result.content.confidence * 100).toFixed(0) + '%' : '100%'}</div>
-            <div style="font-size: 0.65rem; color: #555; margin-top: 5px;">Neural Verification Sync</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Latency</div>
+            <div class="stat-label">Ingestion Latency</div>
             <div class="stat-value">${result.metadata?.processingTime?.toFixed(2) || '0.00'}s</div>
-            <div style="font-size: 0.65rem; color: #555; margin-top: 5px;">Total Sync Time</div>
+            <div class="stat-sub">Neural Processing Sync</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Inferred Type</div>
+            <div class="stat-value" style="color: var(--accent);">${result.metadata?.inferredType || 'Unclassified'}</div>
+            <div class="stat-sub">Format: ${result.metadata?.documentType?.toUpperCase() || 'N/A'} (${fileSize})</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Verification</div>
+            <div class="stat-value">${result.content?.confidence ? (result.content.confidence * 100).toFixed(0) + '%' : '100%'}</div>
+            <div class="stat-sub">Confidence Score</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Source Auth</div>
+            <div class="stat-value" style="color: #6ed3ff;">Secured</div>
+            <div class="stat-sub">Local Privacy Shield</div>
         </div>
     `;
 
-    document.getElementById('textContent').textContent = result.content?.fullText || 'Null';
+    document.getElementById('textContent').textContent = result.content?.fullText || 'No logic detected';
 
     const entitiesContent = document.getElementById('entitiesContent');
     const entities = result.content?.entities || {};
     let entHTML = '';
 
+    // Group entities nicely
     const colors = ['#00f2ff', '#ff00ff', '#f0f0f0'];
     Object.keys(entities).forEach((key, idx) => {
         if (Array.isArray(entities[key]) && entities[key].length > 0) {
-            entHTML += `<div style="margin-bottom: 1.5rem;">
-                <h4 style="font-size: 0.75rem; color: #666; text-transform: uppercase; margin-bottom: 0.5rem;">${key}</h4>
-                <div>${entities[key].map(e => `<span class="entity-tag" style="border-left: 2px solid ${colors[idx % 3]}">${e}</span>`).join('')}</div>
+            entHTML += `<div style="margin-bottom: 2rem;">
+                <h4 style="font-size: 0.7rem; color: #55667a; text-transform: uppercase; margin-bottom: 0.8rem; letter-spacing: 1.5px;">${key}</h4>
+                <div style="display: flex; flex-wrap: wrap;">${entities[key].map(e => `<span class="entity-tag" style="border-left: 2px solid ${colors[idx % 3]}">${e}</span>`).join('')}</div>
             </div>`;
         }
     });
-    entitiesContent.innerHTML = entHTML || 'No entities detected';
+    entitiesContent.innerHTML = entHTML || '<div style="color: #445566;">No entities detected in this structure.</div>';
 
     const summaryContent = document.getElementById('summaryTabContent');
     if (summaryContent) {
         let insightsHTML = '';
         if (result.content?.insights?.length > 0) {
             insightsHTML = `
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                    <h4 style="font-size: 0.8rem; color: var(--accent); margin-bottom: 1rem;">Core Insights</h4>
-                    <ul style="list-style: none; color: #aaa;">
-                        ${result.content.insights.map(i => `<li style="margin-bottom: 10px; padding-left: 15px; border-left: 1px solid var(--accent);">${i}</li>`).join('')}
+                <div style="margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--border);">
+                    <h4 style="font-size: 0.75rem; color: var(--accent); margin-bottom: 1.2rem; text-transform: uppercase; letter-spacing: 1.5px;">Strategic Insights</h4>
+                    <ul style="list-style: none;">
+                        ${result.content.insights.map(i => `<li style="margin-bottom: 12px; padding-left: 18px; border-left: 2px solid var(--accent); color: #fff; font-size: 0.95rem;">${i}</li>`).join('')}
                     </ul>
                 </div>
             `;
         }
         summaryContent.innerHTML = `
-            <div style="font-size: 1.1rem; color: #fff; font-weight: 500;">
-                ${result.content?.summary || 'No intelligence analysis available.'}
+            <div style="font-size: 1.1rem; color: #fff; font-weight: 500; line-height: 1.7;">
+                ${result.content?.summary || 'No intelligence analysis retrieved for this document.'}
             </div>
             ${insightsHTML}
         `;

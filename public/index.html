@@ -4,18 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | PRD Extractor</title>
+    <title>Workspace | DOC INTELLIGENCE</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
-            --panel: #111111;
+            --bg: #050a10;
+            /* Deep blue-black */
+            --panel: #0d141d;
             --accent: #00f2ff;
             --text-main: #ffffff;
-            --text-dim: #888888;
+            --text-dim: #94a3b8;
             --border: rgba(255, 255, 255, 0.08);
+            --item-hover: rgba(255, 255, 255, 0.04);
         }
 
         * {
@@ -50,11 +52,13 @@
         .logo {
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
+            text-decoration: none;
+            color: #fff;
         }
 
         .logo-box {
@@ -62,6 +66,7 @@
             height: 10px;
             background: var(--accent);
             box-shadow: 0 0 10px var(--accent);
+            transform: rotate(45deg);
         }
 
         .history-title-row {
@@ -73,8 +78,8 @@
 
         .history-title {
             text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
             color: var(--text-dim);
             font-weight: 700;
         }
@@ -82,30 +87,38 @@
         .clear-btn {
             background: transparent;
             border: none;
-            color: #ff4d4d;
+            color: #ff6b6b;
             font-size: 0.7rem;
             cursor: pointer;
             font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 107, 107, 0.1);
         }
 
         #historyList {
             flex: 1;
             overflow-y: auto;
             margin-top: 1rem;
+            padding-right: 5px;
         }
 
         .history-item {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.2s;
             border: 1px solid transparent;
             position: relative;
+            background: rgba(255, 255, 255, 0.01);
         }
 
         .history-item:hover {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--item-hover);
             border-color: var(--border);
         }
 
@@ -118,8 +131,8 @@
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 2.5rem 4rem;
-            background: radial-gradient(circle at top right, rgba(0, 242, 255, 0.03), transparent 40%);
+            padding: 2.5rem 5%;
+            background: radial-gradient(circle at 80% 0%, rgba(0, 242, 255, 0.05), transparent 50%);
         }
 
         header {
@@ -132,30 +145,26 @@
         h2 {
             font-family: 'Outfit', sans-serif;
             font-size: 1.8rem;
+            font-weight: 700;
         }
 
-        .controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        /* Toggle */
         .ai-status {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             background: var(--panel);
-            padding: 8px 16px;
+            padding: 8px 18px;
             border-radius: 50px;
             border: 1px solid var(--border);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dim);
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 34px;
+            width: 36px;
             height: 18px;
         }
 
@@ -172,7 +181,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #333;
+            background-color: #2d3748;
             transition: .4s;
             border-radius: 34px;
         }
@@ -194,105 +203,143 @@
         }
 
         input:checked+.slider:before {
-            transform: translateX(16px);
+            transform: translateX(18px);
         }
 
         /* Upload Zone */
         .upload-zone {
             background: var(--panel);
             border: 1px dashed var(--border);
-            border-radius: 20px;
-            padding: 4rem;
+            border-radius: 24px;
+            padding: 5rem 2rem;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 3rem;
+            cursor: pointer;
         }
 
-        .upload-zone:hover,
-        .upload-zone.dragover {
+        .upload-zone:hover {
             border-color: var(--accent);
-            background: rgba(0, 242, 255, 0.01);
+            background: rgba(0, 242, 255, 0.02);
+            transform: translateY(-2px);
+        }
+
+        .upload-zone h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
         }
 
         .upload-zone p {
             color: var(--text-dim);
-            margin: 1rem 0;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
         }
 
         .btn-upload {
-            background: var(--text-main);
-            color: var(--bg);
-            padding: 12px 28px;
-            border-radius: 8px;
+            background: #fff;
+            color: #000;
+            padding: 14px 32px;
+            border-radius: 12px;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: 0.2s;
         }
 
         .btn-upload:hover {
             background: var(--accent);
-            transform: translateY(-2px);
         }
 
         /* Results Area */
         .result-container {
             display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
         }
 
         .stat-card {
             background: var(--panel);
             padding: 1.5rem;
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid var(--border);
+            transition: border-color 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(0, 242, 255, 0.2);
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
         }
 
         .stat-value {
             font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--accent);
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-sub {
+            font-size: 0.7rem;
+            color: #55667a;
+            margin-top: 6px;
         }
 
         .tabs {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             border-bottom: 1px solid var(--border);
             margin-bottom: 2rem;
         }
 
         .tab {
-            padding-bottom: 1rem;
+            padding-bottom: 1.2rem;
             color: var(--text-dim);
             cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
+            font-size: 0.9rem;
+            font-weight: 700;
             position: relative;
+            background: none;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .tab.active {
-            color: var(--text-main);
+            color: var(--accent);
         }
 
         .tab.active::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            bottom: -1px;
             left: 0;
             width: 100%;
             height: 2px;
@@ -304,10 +351,10 @@
             display: none;
             background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            line-height: 1.7;
-            color: #ddd;
+            border-radius: 18px;
+            padding: 2.5rem;
+            line-height: 1.8;
+            color: #cbd5e1;
         }
 
         .tab-content.active {
@@ -316,21 +363,25 @@
 
         pre {
             font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             white-space: pre-wrap;
-            word-break: break-all;
+            color: #94a3b8;
         }
 
         /* Progress */
         .progress-box {
             display: none;
             margin-bottom: 3rem;
+            background: var(--panel);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
         }
 
         .progress-bar {
-            height: 4px;
-            border-radius: 2px;
-            background: #222;
+            height: 6px;
+            border-radius: 10px;
+            background: #1a222c;
             overflow: hidden;
             margin-bottom: 1rem;
         }
@@ -339,30 +390,32 @@
             height: 100%;
             background: var(--accent);
             transition: width 0.3s;
+            box-shadow: 0 0 10px var(--accent);
         }
 
-        /* Entities */
         .entity-tag {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            padding: 4px 12px;
-            border-radius: 6px;
-            margin: 0 8px 8px 0;
+            padding: 6px 14px;
+            border-radius: 8px;
+            margin: 0 10px 10px 0;
             font-size: 0.85rem;
+            color: #fff;
+            font-weight: 600;
         }
 
-        /* Delete Btn */
         .delete-item-btn {
             position: absolute;
-            right: 10px;
-            top: 12px;
+            right: 12px;
+            top: 18px;
             opacity: 0;
             transition: 0.2s;
-            color: #ff4d4d;
+            color: #ff6b6b;
             background: transparent;
             border: none;
             cursor: pointer;
+            padding: 5px;
         }
 
         .history-item:hover .delete-item-btn {
@@ -370,12 +423,16 @@
         }
 
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #333;
+            background: #1a222c;
             border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2d3748;
         }
     </style>
 </head>
@@ -384,25 +441,26 @@
     <div class="app-container">
         <!-- SIDEBAR -->
         <aside class="sidebar">
-            <div class="logo">
+            <a href="/" class="logo">
                 <div class="logo-box"></div>
-                PRD EXTRACTOR
-            </div>
+                DOC INTELLIGENCE
+            </a>
 
             <div class="history-title-row">
-                <span class="history-title">History</span>
+                <span class="history-title">Sync History</span>
                 <button id="clearHistoryBtn" class="clear-btn">Clear All</button>
             </div>
 
             <div id="historyList">
-                <!-- Items populated by JS -->
+                <div style="padding: 2rem; color: #445566; text-align: center; font-size: 0.8rem;">Ready for ingestion
+                </div>
             </div>
         </aside>
 
         <!-- MAIN -->
         <main class="main-content">
             <header>
-                <h2>Workspace</h2>
+                <h2>Intelligence Layer</h2>
                 <div class="controls">
                     <div class="ai-status">
                         <label class="switch">
@@ -416,10 +474,12 @@
 
             <!-- UPLOAD ZONE -->
             <div class="upload-zone" id="uploadArea">
-                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">❖</div>
-                <h3>Intelligence Layer</h3>
-                <p>Upload documents to trigger neural extraction</p>
-                <button class="btn-upload" id="uploadBtn">SELECT DOCUMENT</button>
+                <div
+                    style="font-size: 3rem; color: var(--accent); margin-bottom: 1.5rem; text-shadow: 0 0 20px rgba(0,242,255,0.3);">
+                    ❖</div>
+                <h3>Ingest Document</h3>
+                <p>Drop PDF, Images, or Text files to begin neural extraction</p>
+                <button class="btn-upload" id="uploadBtn">Ingest File</button>
                 <input type="file" id="fileInput" hidden accept=".pdf,.png,.jpg,.jpeg,.docx,.xlsx,.txt,.md">
             </div>
 
@@ -428,21 +488,19 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
-                <div id="statusText" style="font-size: 0.85rem; color: var(--text-dim);">Analyzing Neural pathways...
-                </div>
+                <div id="statusText" style="font-size: 0.85rem; color: var(--text-dim); font-weight: 600;">Connecting to
+                    neural network...</div>
             </div>
 
             <!-- RESULTS -->
             <div class="result-container" id="resultContainer">
-                <div class="stats-grid" id="metadataGrid">
-                    <!-- Stat cards here -->
-                </div>
+                <div class="stats-grid" id="metadataGrid"></div>
 
                 <div class="tabs">
-                    <div class="tab active" data-tab="summary">Insight</div>
-                    <div class="tab" data-tab="text">Raw Data</div>
-                    <div class="tab" data-tab="entities">Entities</div>
-                    <div class="tab" data-tab="json">JSON</div>
+                    <button class="tab active" data-tab="summary">Insight</button>
+                    <button class="tab" data-tab="text">Raw Logic</button>
+                    <button class="tab" data-tab="entities">Entities</button>
+                    <button class="tab" data-tab="json">Neural JSON</button>
                 </div>
 
                 <div id="summaryTab" class="tab-content active">
@@ -455,10 +513,10 @@
                     <div id="entitiesContent"></div>
                 </div>
                 <div id="jsonTab" class="tab-content">
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
                         <button id="copyBtn" class="clear-btn"
-                            style="color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 4px;">Copy
-                            JSON</button>
+                            style="color: var(--accent); border: 1px solid var(--accent); padding: 6px 16px; border-radius: 8px;">Copy
+                            Structure</button>
                     </div>
                     <pre id="jsonContent"></pre>
                 </div>
