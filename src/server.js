@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -28,8 +29,17 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Request logging
 app.use(requestLogger);
 
-// Serve static files (frontend test interface) - BEFORE other routes
+// Serve static files
 app.use(express.static('public'));
+
+// Main Routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/landing.html'));
+});
+
+app.get('/app', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 // API routes (with authentication)
 app.use('/api', authenticate, routes);

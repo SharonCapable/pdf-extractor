@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRD Extractor | Secure Document Intelligence</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.3);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            z-index: -1;
+            filter: blur(80px);
+        }
+
+        nav {
+            padding: 2rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .hero {
+            padding: 8rem 10% 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 2rem;
+            background: linear-gradient(to bottom, #fff 40%, rgba(255, 255, 255, 0.4));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--text-main);
+            color: var(--bg);
+            padding: 1.2rem 3rem;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            background: var(--accent);
+        }
+
+        .btn-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 1.2rem 3rem;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .features {
+            padding: 8rem 10%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 3rem;
+            border-radius: 24px;
+            transition: all 0.4s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-dim);
+        }
+
+        footer {
+            padding: 4rem 10%;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .dashboard-preview {
+            margin-top: 6rem;
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #111 0%, #000 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .dashboard-preview::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, #050505);
+        }
+
+        @media (max-width: 768px) {
+            .cta-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="noise"></div>
+    <div class="glow"></div>
+
+    <nav>
+        <div class="logo">
+            <div class="logo-dot"></div>
+            PRD EXTRACTOR
+        </div>
+        <div>
+            <a href="/app" class="btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.9rem;">Launch App</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="badge">Privacy-first Intelligence</div>
+        <h1>Documents, <br>Deciphered.</h1>
+        <p>The enterprise-grade extraction engine that turns messy documents into structured intelligence. Locally
+            processed, globally accessible.</p>
+
+        <div class="cta-group">
+            <a href="/app" class="btn-primary">Start Extracting</a>
+            <a href="https://github.com/SharonCapable/pdf-extractor" class="btn-secondary">View Documentation</a>
+        </div>
+
+        <div class="dashboard-preview">
+            <!-- Simulated UI contents -->
+            <div style="padding: 2rem; display: flex; gap: 1rem;">
+                <div style="width: 200px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;"></div>
+                <div style="width: 100px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;"></div>
+            </div>
+            <div
+                style="margin: 2rem; height: 200px; background: rgba(0, 242, 255, 0.05); border: 1px dashed rgba(0, 242, 255, 0.2); border-radius: 12px; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.2);">
+                SECURE DROPZONE
+            </div>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="feature-card">
+            <span class="feature-icon">🛡️</span>
+            <h3>Deep Privacy</h3>
+            <p>Your data never leaves your infrastructure. Processed entirely on-prem with local LLM support.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3>Neural Speed</h3>
+            <p>Optimized OCR and parsing pipelines designed for high-throughput document analysis.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🧬</span>
+            <h3>Structured Logic</h3>
+            <p>Convert unstructured PDF garbage into clean, developer-ready JSON objects in seconds.</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 PRD Extractor Service. Built for Scale, Optimized for Privacy.
+    </footer>
+</body>
+
+</html>

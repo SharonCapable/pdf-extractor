@@ -4,10 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRD Extractor - Document OCR Test Interface</title>
-    <link rel="icon"
-        href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAAAAMUlEQVQ4T2NkYGAQY2BgYDBgYGBguPn//38mBgaGfwwDDAwM+A0YDAcMGAwHDBgMBwwYDAPoHQUAh6kXEQAAAABJRU5ErkJggg==">
+    <title>Dashboard | PRD Extractor</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --bg: #0a0a0a;
+            --panel: #111111;
+            --accent: #00f2ff;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,337 +25,138 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 2rem;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 3rem;
-        }
-
-        .header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            margin-bottom: 2rem;
-        }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 3rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-
-        .upload-area:hover {
-            border-color: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-
-        .upload-area.dragging {
-            border-color: #764ba2;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-        }
-
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .upload-text {
-            font-size: 1.3rem;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-hint {
-            color: #666;
-            font-size: 0.95rem;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .progress-container {
-            margin-top: 2rem;
-            display: none;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 10px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            height: 100vh;
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-            animation: pulse 1.5s ease-in-out infinite;
+        .app-container {
+            display: flex;
+            height: 100vh;
         }
 
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.7;
-            }
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
         }
 
-        .status-text {
-            text-align: center;
-            margin-top: 1rem;
-            color: #667eea;
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .logo-box {
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .history-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-title {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            font-weight: 700;
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: #ff4d4d;
+            font-size: 0.7rem;
+            cursor: pointer;
             font-weight: 600;
         }
 
-        .result-container {
-            display: none;
-            margin-top: 2rem;
+        #historyList {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 1rem;
         }
 
-        .result-tabs {
+        .history-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--border);
+        }
+
+        .history-item.active {
+            background: rgba(0, 242, 255, 0.05);
+            border-color: var(--accent);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem 4rem;
+            background: radial-gradient(circle at top right, rgba(0, 242, 255, 0.03), transparent 40%);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+        }
+
+        .controls {
             display: flex;
             gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #e0e0e0;
+            align-items: center;
         }
 
-        .tab {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .metadata-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .metadata-item {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .metadata-label {
-            font-size: 0.85rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .metadata-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .text-content {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 12px;
-            max-height: 500px;
-            overflow-y: auto;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-        }
-
-        .entity-section {
-            margin-bottom: 2rem;
-        }
-
-        .entity-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 1rem;
-        }
-
-        .entity-list {
+        /* Toggle */
+        .ai-status {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
         }
 
-        .entity-tag {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 1.5rem;
-            border-radius: 12px;
-            border-left: 4px solid #c33;
-            margin-top: 1rem;
-        }
-
-        .success-badge {
-            display: inline-block;
-            background: #4caf50;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .json-viewer {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1.5rem;
-            border-radius: 12px;
-            max-height: 500px;
-            overflow: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-
-        .copy-btn {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .copy-btn:hover {
-            background: #45a049;
-        }
-
-        /* New Sidebar Styles */
-        .sidebar {
-            flex: 1;
-            max-width: 300px;
-            min-width: 250px;
-        }
-
-        .main-content {
-            flex: 3;
-            min-width: 0;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                max-width: 100%;
-            }
-        }
-
-        /* Switch Styles */
         .switch {
             position: relative;
             display: inline-block;
-            width: 40px;
-            height: 20px;
+            width: 34px;
+            height: 18px;
         }
 
         .switch input {
@@ -361,7 +172,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #333;
             transition: .4s;
             border-radius: 34px;
         }
@@ -369,8 +180,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 14px;
-            width: 14px;
+            height: 12px;
+            width: 12px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -379,122 +190,282 @@
         }
 
         input:checked+.slider {
-            background-color: #667eea;
+            background-color: var(--accent);
         }
 
         input:checked+.slider:before {
-            transform: translateX(20px);
+            transform: translateX(16px);
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            background: var(--panel);
+            border: 1px dashed var(--border);
+            border-radius: 20px;
+            padding: 4rem;
+            text-align: center;
+            transition: all 0.3s;
+            margin-bottom: 3rem;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(0, 242, 255, 0.01);
+        }
+
+        .upload-zone p {
+            color: var(--text-dim);
+            margin: 1rem 0;
+        }
+
+        .btn-upload {
+            background: var(--text-main);
+            color: var(--bg);
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .btn-upload:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Results Area */
+        .result-container {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding-bottom: 1rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--text-main);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            line-height: 1.7;
+            color: #ddd;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        pre {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Progress */
+        .progress-box {
+            display: none;
+            margin-bottom: 3rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: #222;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        /* Entities */
+        .entity-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 6px;
+            margin: 0 8px 8px 0;
+            font-size: 0.85rem;
+        }
+
+        /* Delete Btn */
+        .delete-item-btn {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            opacity: 0;
+            transition: 0.2s;
+            color: #ff4d4d;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .history-item:hover .delete-item-btn {
+            opacity: 1;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container" style="display: flex; gap: 2rem; max-width: 1400px; padding-top: 2rem;">
-
-        <!-- HISTORY SIDEBAR -->
-        <div class="sidebar">
-            <div class="header-mini" style="margin-bottom: 2rem; color: white;">
-                <div style="font-size: 1.5rem; font-weight: 700;">📄 PRD Extractor</div>
-                <div style="font-size: 0.8rem; opacity: 0.8;">Local Intelligence</div>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-box"></div>
+                PRD EXTRACTOR
             </div>
 
-            <div class="card"
-                style="padding: 1.5rem; height: calc(100vh - 100px); overflow-y: auto; background: rgba(255,255,255,0.95);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3
-                        style="margin: 0; color: #444; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
-                        Recent History</h3>
-                    <button id="clearHistoryBtn"
-                        style="background: none; border: none; color: #e53e3e; font-size: 0.75rem; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: background 0.2s;">
-                        <span>🗑️ Clear</span>
-                    </button>
-                </div>
-                <div id="historyList">
-                    <div style="padding: 1rem; color: #888; text-align: center; font-size: 0.9rem;">Loading history...
+            <div class="history-title-row">
+                <span class="history-title">History</span>
+                <button id="clearHistoryBtn" class="clear-btn">Clear All</button>
+            </div>
+
+            <div id="historyList">
+                <!-- Items populated by JS -->
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <header>
+                <h2>Workspace</h2>
+                <div class="controls">
+                    <div class="ai-status">
+                        <label class="switch">
+                            <input type="checkbox" id="aiToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>Deep Analysis</span>
                     </div>
+                </div>
+            </header>
+
+            <!-- UPLOAD ZONE -->
+            <div class="upload-zone" id="uploadArea">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">❖</div>
+                <h3>Intelligence Layer</h3>
+                <p>Upload documents to trigger neural extraction</p>
+                <button class="btn-upload" id="uploadBtn">SELECT DOCUMENT</button>
+                <input type="file" id="fileInput" hidden accept=".pdf,.png,.jpg,.jpeg,.docx,.xlsx,.txt,.md">
+            </div>
+
+            <!-- PROGRESS -->
+            <div class="progress-box" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div id="statusText" style="font-size: 0.85rem; color: var(--text-dim);">Analyzing Neural pathways...
                 </div>
             </div>
-        </div>
 
-        <!-- MAIN CONTENT -->
-        <div class="main-content">
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h2 style="font-size: 1.4rem; color: #444;">Extract Document Data</h2>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div
-                            style="display: flex; align-items: center; gap: 0.5rem; background: #f0f4ff; padding: 4px 12px; border-radius: 50px; border: 1px solid #d0dfff;">
-                            <label class="switch">
-                                <input type="checkbox" id="aiToggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #4460aa;">AI Analysis</span>
-                        </div>
-                        <div id="offlineIndicator"
-                            style="background: #e7f9ed; color: #2e7d32; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
-                            AI: Ollama Ready
-                        </div>
-                    </div>
-                </div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: -1rem; margin-bottom: 1.5rem;">
-                    💡 <em>AI Analysis provides summaries/insights but takes longer in local mode.</em>
+            <!-- RESULTS -->
+            <div class="result-container" id="resultContainer">
+                <div class="stats-grid" id="metadataGrid">
+                    <!-- Stat cards here -->
                 </div>
 
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📤</div>
-                    <div class="upload-text">Drag & drop your document here</div>
-                    <div class="upload-hint">or</div>
-                    <button class="btn" id="uploadBtn" style="margin-top: 1rem;">Choose File</button>
-                    <div class="upload-hint" style="margin-top: 0.5rem;">Supports PDF, PNG, JPG, DOCX, XLSX, TXT, MD
-                        (Max 50MB)</div>
-                    <input type="file" id="fileInput"
-                        accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp,.docx,.xlsx,.txt,.md,.csv">
+                <div class="tabs">
+                    <div class="tab active" data-tab="summary">Insight</div>
+                    <div class="tab" data-tab="text">Raw Data</div>
+                    <div class="tab" data-tab="entities">Entities</div>
+                    <div class="tab" data-tab="json">JSON</div>
                 </div>
 
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="status-text" id="statusText">AI is analyzing your document locally...</div>
+                <div id="summaryTab" class="tab-content active">
+                    <div id="summaryTabContent"></div>
                 </div>
-
-                <div class="result-container" id="resultContainer">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                        <div class="success-badge">✓ Extraction & AI Analysis Complete</div>
-                    </div>
-
-                    <div class="metadata-grid" id="metadataGrid"></div>
-
-                    <div class="result-tabs">
-                        <button class="tab active" data-tab="summary">AI Summary</button>
-                        <button class="tab" data-tab="text">Raw Text</button>
-                        <button class="tab" data-tab="entities">Entities</button>
-                        <button class="tab" data-tab="json">JSON Response</button>
-                        <!-- API Tab Removed -->
-                    </div>
-
-                    <div id="summaryTab" class="tab-content active">
-                        <div id="summaryTabContent"></div>
-                    </div>
-
-                    <div id="textTab" class="tab-content">
-                        <pre class="text-content" id="textContent"></pre>
-                    </div>
-
-                    <div id="entitiesTab" class="tab-content">
-                        <div id="entitiesContent"></div>
-                    </div>
-
-                    <div id="jsonTab" class="tab-content">
-                        <button class="copy-btn" id="copyBtn">Copy JSON</button>
-                        <pre class="json-viewer" id="jsonContent"></pre>
-                    </div>
+                <div id="textTab" class="tab-content">
+                    <pre id="textContent"></pre>
                 </div>
-
-                <div id="errorContainer"></div>
+                <div id="entitiesTab" class="tab-content">
+                    <div id="entitiesContent"></div>
+                </div>
+                <div id="jsonTab" class="tab-content">
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                        <button id="copyBtn" class="clear-btn"
+                            style="color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 4px;">Copy
+                            JSON</button>
+                    </div>
+                    <pre id="jsonContent"></pre>
+                </div>
             </div>
-        </div>
+
+            <div id="errorContainer"></div>
+        </main>
     </div>
 
     <script src="app.js"></script>
