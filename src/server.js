@@ -34,11 +34,11 @@ app.use(express.static('public'));
 
 // Main Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/landing.html'));
+    res.sendFile(path.resolve(__dirname, '../public/landing.html'));
 });
 
 app.get('/app', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(path.resolve(__dirname, '../public/index.html'));
 });
 
 // API routes (with authentication)
