@@ -77,6 +77,12 @@ document.addEventListener('DOMContentLoaded', loadHistory);
 function handleFileSelect() {
     const file = fileInput.files[0];
     if (file) {
+        // Vercel has a 4.5MB limit for serverless function requests
+        if (file.size > 4.5 * 1024 * 1024 && window.location.hostname.includes('vercel.app')) {
+            showError('File too large for Cloud Demo (Max 4.5MB). Download the source code to process large files locally.');
+            fileInput.value = ''; // Reset input
+            return;
+        }
         uploadFile(file);
     }
 }

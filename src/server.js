@@ -10,6 +10,11 @@ const { authenticate, errorHandler, requestLogger } = require('./api/middleware'
 
 const app = express();
 
+// Trust proxy for Vercel rate limiting
+if (process.env.VERCEL === '1') {
+    app.set('trust proxy', 1);
+}
+
 // Security middleware
 app.use(helmet());
 app.use(cors());
@@ -22,9 +27,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Body parsing
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// Body parsing (Note: Vercel has a 4.5MB limit for serverless functions)
+app.use(express.json({ limit: '4mb' }));
+app.use(express.urlencoded({ extended: true, limit: '4mb' }));
 
 // Request logging
 app.use(requestLogger);
@@ -47,9 +52,9 @@ app.use('/api', authenticate, routes);
 // API info endpoint (root / now serves frontend from public/index.html)
 app.get('/api-info', (req, res) => {
     res.json({
-        name: 'PRD Extractor API',
+        name: 'DOC Intelligence API',
         version: '1.0.0',
-        description: 'Document OCR and parsing service',
+        description: 'Secure Document Extraction and Intelligence Service',
         endpoints: {
             health: '/api/health',
             extract: 'POST /api/extract',
