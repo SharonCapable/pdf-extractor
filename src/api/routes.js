@@ -60,9 +60,10 @@ router.post('/extract', upload.single('file'), async (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        const { async = false, ocrProvider } = req.body;
+        const { async = false, ocrProvider, runAI = true } = req.body;
         const options = {
             ocrProvider,
+            runAI: runAI === 'true' || runAI === true,
             filename: req.file.originalname
         };
 

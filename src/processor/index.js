@@ -67,8 +67,19 @@ class DocumentProcessor {
             // Parse and extract structured data
             const parsedData = await this.parseContent(ocrResult, documentType);
 
-            // Perform AI analysis (Inference and Summarization)
-            const aiAnalysis = await aiService.analyzeDocument(ocrResult.text, filename);
+            // Perform AI analysis (Inference and Summarization) if requested
+            let aiAnalysis = {
+                summary: "AI Analysis skipped by user.",
+                insights: [],
+                inferredType: documentType || 'Generic Document',
+                confidence: 0,
+                provider: 'none',
+                isOffline: true
+            };
+
+            if (options.runAI !== false) {
+                aiAnalysis = await aiService.analyzeDocument(ocrResult.text, filename);
+            }
 
             // Calculate total processing time
             const endTime = Date.now();

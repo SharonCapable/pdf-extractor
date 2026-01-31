@@ -11,6 +11,7 @@ const statusText = document.getElementById('statusText');
 const resultContainer = document.getElementById('resultContainer');
 const errorContainer = document.getElementById('errorContainer');
 const historyList = document.getElementById('historyList');
+const aiToggle = document.getElementById('aiToggle');
 
 // Event Listeners
 if (uploadBtn) uploadBtn.addEventListener('click', () => fileInput.click());
@@ -36,6 +37,28 @@ if (uploadArea) {
     });
 }
 
+// Global click handler for history items (event delegation)
+document.addEventListener('click', (e) => {
+    // Check if clicked element or its parent is a history item
+    const historyItem = e.target.closest('.history-item');
+    if (historyItem) {
+        const docId = historyItem.getAttribute('data-id');
+        if (docId) {
+            viewDocument(docId);
+        }
+    }
+
+    // Tab switching
+    if (e.target.classList.contains('tab')) {
+        const tabName = e.target.getAttribute('data-tab');
+        if (tabName) showTab(tabName, e.target);
+    }
+
+    if (e.target.id === 'copyBtn') {
+        copyJSON(e.target);
+    }
+});
+
 // Load history on start
 document.addEventListener('DOMContentLoaded', loadHistory);
 
@@ -54,8 +77,12 @@ async function uploadFile(file) {
     progressFill.style.width = '0%';
     statusText.textContent = 'Uploading...';
 
+    // Get AI preference
+    const runAI = aiToggle ? aiToggle.checked : true;
+
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('runAI', runAI); // Send AI preference to backend
 
     try {
         // Simulate progress
@@ -67,7 +94,11 @@ async function uploadFile(file) {
 
             if (progress < 30) statusText.textContent = 'Uploading document...';
             else if (progress < 60) statusText.textContent = 'Extracting text...';
-            else statusText.textContent = 'AI is analyzing your document locally...';
+            else {
+                statusText.textContent = runAI
+                    ? 'AI is analyzing your document locally (Ollama)...'
+                    : 'Finalizing extraction...';
+            }
         }, 500);
 
         const response = await fetch('/api/extract', {
@@ -114,23 +145,37 @@ async function loadHistory() {
 
         if (data.documents && data.documents.length > 0) {
             historyList.innerHTML = data.documents.map(doc => `
-                <div class="history-item" onclick="viewDocument('${doc.documentId}')" style="cursor: pointer; padding: 10px; border-bottom: 1px solid #eee; transition: background 0.2s;">
-                    <div class="history-name" style="font-weight: 500; color: #333;">${doc.filename || doc.documentId}</div>
-                    <div class="history-meta" style="font-size: 0.8rem; color: #888;">
-                        ${doc.metadata?.documentType?.toUpperCase() || 'DOC'} • ${new Date(doc.metadata?.createdAt || doc.createdAt).toLocaleDateString()}
+                <div class="history-item" data-id="${doc.documentId}" style="cursor: pointer; padding: 12px; border-bottom: 1px solid #edf2f7; transition: all 0.2s ease; border-radius: 8px; margin-bottom: 4px;">
+                    <div class="history-name" style="font-weight: 600; color: #2d3748; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.filename || doc.documentId}</div>
+                    <div class="history-meta" style="font-size: 0.75rem; color: #718096; margin-top: 4px; display: flex; justify-content: space-between;">
+                        <span>${doc.metadata?.inferredType || doc.metadata?.documentType?.toUpperCase() || 'DOC'}</span>
+                        <span>${new Date(doc.metadata?.createdAt || doc.createdAt).toLocaleDateString()}</span>
                     </div>
                 </div>
             `).join('');
+
+            // Add hover effects via JS since we can't easily add a <style> block here without affecting everything
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.backgroundColor = '#f7fafc';
+                    item.style.transform = 'translateX(4px)';
+                });
+                item.addEventListener('mouseleave', () => {
+                    item.style.backgroundColor = 'transparent';
+                    item.style.transform = 'translateX(0)';
+                });
+            });
+
         } else {
-            historyList.innerHTML = '<div style="padding: 1rem; color: #888; text-align: center; font-size: 0.9rem;">No recent history</div>';
+            historyList.innerHTML = '<div style="padding: 2rem; color: #a0aec0; text-align: center; font-size: 0.85rem;">No recent history</div>';
         }
     } catch (error) {
         console.error('Failed to load history:', error);
     }
 }
 
-// Make viewDocument global so onclick works
-window.viewDocument = async function (documentId) {
+// viewDocument function
+async function viewDocument(documentId) {
     try {
         // Scroll to result immediately
         resultContainer.scrollIntoView({ behavior: 'smooth' });
@@ -143,15 +188,15 @@ window.viewDocument = async function (documentId) {
         });
         if (!response.ok) throw new Error('Failed to load document');
 
-        const document = await response.json();
-        displayResult(document);
+        const documentData = await response.json();
+        displayResult(documentData);
         resultContainer.style.opacity = '1';
 
     } catch (error) {
         showError(`Could not load document: ${error.message}`);
         resultContainer.style.opacity = '1';
     }
-};
+}
 
 function displayResult(result) {
     resultContainer.style.display = 'block';
@@ -159,20 +204,19 @@ function displayResult(result) {
     // Display metadata
     const metadataGrid = document.getElementById('metadataGrid');
 
-    // File size might not be stored in history, so handle it
-    const fileSizeStr = result.metadata?.fileSize ? formatFileSize(result.metadata.fileSize) : '';
+    const fileSizeStr = result.metadata?.fileSize ? formatFileSize(result.metadata.fileSize) : 'N/A';
 
     metadataGrid.innerHTML = `
         <div class="metadata-item">
             <div class="metadata-label">File Format</div>
             <div class="metadata-value">${result.metadata?.documentType?.toUpperCase() || 'N/A'}</div>
-            ${fileSizeStr ? `<div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Size: ${fileSizeStr}</div>` : ''}
+            <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Size: ${fileSizeStr}</div>
         </div>
         <div class="metadata-item">
             <div class="metadata-label">AI Inferred Type</div>
             <div class="metadata-value" style="font-size: 1.1rem; color: #764ba2;">${result.metadata?.inferredType || 'In Review...'}</div>
             <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">
-                ${result.content?.isOffline ? '🔒 Local Privacy Mode' : '☁️ Cloud/Local Analysis'}
+                ${result.content?.isOffline ? '🔒 Local Privacy Mode' : '☁️ Cloud Analysis'}
             </div>
         </div>
         <div class="metadata-item">
@@ -266,9 +310,12 @@ function displayResult(result) {
             `;
         }
 
+        const summaryText = result.content?.summary || 'AI Summary not available for this document.';
+        const isSkipped = summaryText.includes('skipped');
+
         summaryContent.innerHTML = `
-            <div style="background: #f8faff; border-left: 4px solid #667eea; padding: 1.5rem; border-radius: 0 12px 12px 0; line-height: 1.6; color: #333;">
-                ${result.content?.summary || 'AI Summary not available for this document.'}
+            <div style="background: ${isSkipped ? '#fff5f5' : '#f8faff'}; border-left: 4px solid ${isSkipped ? '#feb2b2' : '#667eea'}; padding: 1.5rem; border-radius: 0 12px 12px 0; line-height: 1.6; color: #333;">
+                ${summaryText}
             </div>
             ${insightsHTML}
         `;
@@ -277,18 +324,6 @@ function displayResult(result) {
     // Display JSON
     document.getElementById('jsonContent').textContent = JSON.stringify(result, null, 2);
 }
-
-// Event listeners for tabs
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('tab')) {
-        const tabName = e.target.getAttribute('data-tab');
-        if (tabName) showTab(tabName, e.target);
-    }
-
-    if (e.target.id === 'copyBtn') {
-        copyJSON(e.target);
-    }
-});
 
 function showTab(tabName, clickedTab) {
     // Update tab buttons
@@ -332,12 +367,12 @@ function showOllamaSetup() {
                 
                 <ol style="margin-left: 1.5rem; color: #555; line-height: 1.6;">
                     <li>Download Ollama from <a href="https://ollama.com" target="_blank" style="color: #667eea; font-weight: bold;">ollama.com</a></li>
-                    <li>Open your terminal and run: <code style="background: #eef; padding: 2px 6px; border-radius: 4px;">ollama run llama3:8b</code></li>
+                    <li>Open your terminal and run: <code style="background: #eef; padding: 2px 6px; border-radius: 4px;">ollama run llama3.2</code></li>
                     <li>Keep that terminal window open and try your upload again!</li>
                 </ol>
                 
                 <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
-                    <em>Tip: You can change the model in your .env file (e.g., mistral, phi3).</em>
+                    <em>Tip: You can change the model in your .env file (e.g., llama3.2, mistral).</em>
                 </div>
             </div>
         `;

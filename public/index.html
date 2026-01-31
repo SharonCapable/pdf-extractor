@@ -339,6 +339,52 @@
                 max-width: 100%;
             }
         }
+
+        /* Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #667eea;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
     </style>
 </head>
 
@@ -369,10 +415,23 @@
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <h2 style="font-size: 1.4rem; color: #444;">Extract Document Data</h2>
-                    <div id="offlineIndicator"
-                        style="background: #e7f9ed; color: #2e7d32; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
-                        AI: Ollama Ready
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div
+                            style="display: flex; align-items: center; gap: 0.5rem; background: #f0f4ff; padding: 4px 12px; border-radius: 50px; border: 1px solid #d0dfff;">
+                            <label class="switch">
+                                <input type="checkbox" id="aiToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #4460aa;">AI Analysis</span>
+                        </div>
+                        <div id="offlineIndicator"
+                            style="background: #e7f9ed; color: #2e7d32; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
+                            AI: Ollama Ready
+                        </div>
                     </div>
+                </div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: -1rem; margin-bottom: 1.5rem;">
+                    💡 <em>AI Analysis provides summaries/insights but takes longer in local mode.</em>
                 </div>
 
                 <div class="upload-area" id="uploadArea">
