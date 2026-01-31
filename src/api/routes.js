@@ -223,6 +223,26 @@ router.get('/documents', async (req, res) => {
 });
 
 /**
+ * DELETE /api/documents
+ * Clear all history (Delete all documents)
+ */
+router.delete('/documents', async (req, res) => {
+    try {
+        const documents = await processor.listDocuments({ limit: 1000 });
+        for (const doc of documents) {
+            await processor.deleteDocument(doc.documentId);
+        }
+        res.json({ message: 'History cleared successfully', count: documents.length });
+    } catch (error) {
+        logger.error('Clear history error:', error);
+        res.status(500).json({
+            error: 'Failed to clear history',
+            message: error.message
+        });
+    }
+});
+
+/**
  * DELETE /api/documents/:documentId
  * Delete document
  */

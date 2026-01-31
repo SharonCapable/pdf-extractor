@@ -95,10 +95,18 @@ class LocalStorage extends BaseStorage {
                 if (data) {
                     documents.push({
                         documentId,
+                        filename: data.filename,
                         ...data.metadata
                     });
                 }
             }
+
+            // Sort by createdAt descending
+            documents.sort((a, b) => {
+                const dateA = new Date(a.createdAt || 0);
+                const dateB = new Date(b.createdAt || 0);
+                return dateB - dateA;
+            });
 
             // Apply pagination
             const { limit = 100, offset = 0 } = options;

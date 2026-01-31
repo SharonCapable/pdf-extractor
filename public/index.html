@@ -400,9 +400,15 @@
 
             <div class="card"
                 style="padding: 1.5rem; height: calc(100vh - 100px); overflow-y: auto; background: rgba(255,255,255,0.95);">
-                <h3
-                    style="margin-bottom: 1rem; color: #444; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">
-                    Recent History</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3
+                        style="margin: 0; color: #444; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
+                        Recent History</h3>
+                    <button id="clearHistoryBtn"
+                        style="background: none; border: none; color: #e53e3e; font-size: 0.75rem; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: background 0.2s;">
+                        <span>🗑️ Clear</span>
+                    </button>
+                </div>
                 <div id="historyList">
                     <div style="padding: 1rem; color: #888; text-align: center; font-size: 0.9rem;">Loading history...
                     </div>

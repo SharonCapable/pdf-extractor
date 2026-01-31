@@ -12,10 +12,12 @@ const resultContainer = document.getElementById('resultContainer');
 const errorContainer = document.getElementById('errorContainer');
 const historyList = document.getElementById('historyList');
 const aiToggle = document.getElementById('aiToggle');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
 // Event Listeners
 if (uploadBtn) uploadBtn.addEventListener('click', () => fileInput.click());
 if (fileInput) fileInput.addEventListener('change', handleFileSelect);
+if (clearHistoryBtn) clearHistoryBtn.addEventListener('click', clearAllHistory);
 
 if (uploadArea) {
     uploadArea.addEventListener('dragover', (e) => {
@@ -37,10 +39,19 @@ if (uploadArea) {
     });
 }
 
-// Global click handler for history items (event delegation)
+// Global click handler for history items and actions
 document.addEventListener('click', (e) => {
-    // Check if clicked element or its parent is a history item
+    // History item click
     const historyItem = e.target.closest('.history-item');
+    const deleteBtn = e.target.closest('.delete-item-btn');
+
+    if (deleteBtn) {
+        e.stopPropagation();
+        const docId = deleteBtn.getAttribute('data-id');
+        deleteDocumentItem(docId);
+        return;
+    }
+
     if (historyItem) {
         const docId = historyItem.getAttribute('data-id');
         if (docId) {
@@ -82,7 +93,7 @@ async function uploadFile(file) {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('runAI', runAI); // Send AI preference to backend
+    formData.append('runAI', runAI);
 
     try {
         // Simulate progress
@@ -136,7 +147,7 @@ async function loadHistory() {
     if (!historyList) return;
 
     try {
-        const response = await fetch('/api/documents?limit=10', {
+        const response = await fetch('/api/documents?limit=20', {
             headers: {
                 'Authorization': `Bearer ${API_KEY}`
             }
@@ -145,25 +156,35 @@ async function loadHistory() {
 
         if (data.documents && data.documents.length > 0) {
             historyList.innerHTML = data.documents.map(doc => `
-                <div class="history-item" data-id="${doc.documentId}" style="cursor: pointer; padding: 12px; border-bottom: 1px solid #edf2f7; transition: all 0.2s ease; border-radius: 8px; margin-bottom: 4px;">
-                    <div class="history-name" style="font-weight: 600; color: #2d3748; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.filename || doc.documentId}</div>
-                    <div class="history-meta" style="font-size: 0.75rem; color: #718096; margin-top: 4px; display: flex; justify-content: space-between;">
-                        <span>${doc.metadata?.inferredType || doc.metadata?.documentType?.toUpperCase() || 'DOC'}</span>
-                        <span>${new Date(doc.metadata?.createdAt || doc.createdAt).toLocaleDateString()}</span>
+                <div class="history-item" data-id="${doc.documentId}" style="position: relative; cursor: pointer; padding: 12px; border-bottom: 1px solid #edf2f7; transition: all 0.2s ease; border-radius: 8px; margin-bottom: 4px; group">
+                    <div style="padding-right: 24px;">
+                        <div class="history-name" style="font-weight: 600; color: #2d3748; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.filename || doc.documentId}</div>
+                        <div class="history-meta" style="font-size: 0.75rem; color: #718096; margin-top: 4px; display: flex; justify-content: space-between;">
+                            <span>${doc.inferredType || doc.documentType?.toUpperCase() || 'DOC'}</span>
+                            <span>${new Date(doc.createdAt).toLocaleDateString()}</span>
+                        </div>
                     </div>
+                    <button class="delete-item-btn" data-id="${doc.documentId}" style="position: absolute; right: 8px; top: 12px; background: none; border: none; font-size: 0.8rem; color: #cbd5e0; cursor: pointer; padding: 2px; border-radius: 4px; opacity: 0; transition: all 0.2s;">
+                        ✕
+                    </button>
                 </div>
             `).join('');
 
-            // Add hover effects via JS since we can't easily add a <style> block here without affecting everything
+            // Add hover behavior for delete button
             document.querySelectorAll('.history-item').forEach(item => {
+                const delBtn = item.querySelector('.delete-item-btn');
                 item.addEventListener('mouseenter', () => {
                     item.style.backgroundColor = '#f7fafc';
                     item.style.transform = 'translateX(4px)';
+                    delBtn.style.opacity = '1';
                 });
                 item.addEventListener('mouseleave', () => {
                     item.style.backgroundColor = 'transparent';
                     item.style.transform = 'translateX(0)';
+                    delBtn.style.opacity = '0';
                 });
+                delBtn.addEventListener('mouseenter', () => delBtn.style.color = '#e53e3e');
+                delBtn.addEventListener('mouseleave', () => delBtn.style.color = '#cbd5e0');
             });
 
         } else {
@@ -174,12 +195,52 @@ async function loadHistory() {
     }
 }
 
-// viewDocument function
+async function deleteDocumentItem(documentId) {
+    if (!confirm('Delete this document from history?')) return;
+
+    try {
+        const response = await fetch(`/api/documents/${documentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`
+            }
+        });
+        if (response.ok) {
+            loadHistory();
+            if (resultContainer.style.display === 'block') {
+                // If viewing the deleted doc, hide results
+                // We could check if result.documentId === documentId
+            }
+        }
+    } catch (error) {
+        console.error('Failed to delete document:', error);
+    }
+}
+
+async function clearAllHistory() {
+    if (!confirm('Are you sure you want to clear your entire history? This cannot be undone.')) return;
+
+    try {
+        const response = await fetch('/api/documents', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`
+            }
+        });
+        if (response.ok) {
+            loadHistory();
+            resultContainer.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Failed to clear history:', error);
+    }
+}
+
 async function viewDocument(documentId) {
     try {
-        // Scroll to result immediately
+        // Find existing result container and show loading state
         resultContainer.scrollIntoView({ behavior: 'smooth' });
-        resultContainer.style.opacity = '0.5'; // Indicate loading
+        resultContainer.style.opacity = '0.5';
 
         const response = await fetch(`/api/documents/${documentId}`, {
             headers: {
