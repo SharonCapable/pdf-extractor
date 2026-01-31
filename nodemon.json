@@ -1,0 +1,16 @@
+{
+    "watch": [
+        "src",
+        ".env",
+        "nodemon.json",
+        "package.json"
+    ],
+    "ext": "js,json,env",
+    "ignore": [
+        "uploads/*",
+        "storage/*",
+        "logs/*",
+        "node_modules/*"
+    ],
+    "exec": "node src/server.js"
+}

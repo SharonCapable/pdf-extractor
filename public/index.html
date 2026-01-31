@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRD Extractor - Document OCR Test Interface</title>
+    <link rel="icon"
+        href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAAAAMUlEQVQ4T2NkYGAQY2BgYDBgYGBguPn//38mBgaGfwwDDAwM+A0YDAcMGAwHDBgMBwwYDAPoHQUAh6kXEQAAAABJRU5ErkJggg==">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-area.dragging {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .status-text {
+            text-align: center;
+            margin-top: 1rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .result-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metadata-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .metadata-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metadata-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .text-content {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+
+        .entity-section {
+            margin-bottom: 2rem;
+        }
+
+        .entity-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .entity-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .entity-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #c33;
+            margin-top: 1rem;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .json-viewer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-height: 500px;
+            overflow: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+
+        /* New Sidebar Styles */
+        .sidebar {
+            flex: 1;
+            max-width: 300px;
+            min-width: 250px;
+        }
+
+        .main-content {
+            flex: 3;
+            min-width: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="display: flex; gap: 2rem; max-width: 1400px; padding-top: 2rem;">
+
+        <!-- HISTORY SIDEBAR -->
+        <div class="sidebar">
+            <div class="header-mini" style="margin-bottom: 2rem; color: white;">
+                <div style="font-size: 1.5rem; font-weight: 700;">📄 PRD Extractor</div>
+                <div style="font-size: 0.8rem; opacity: 0.8;">Local Intelligence</div>
+            </div>
+
+            <div class="card"
+                style="padding: 1.5rem; height: calc(100vh - 100px); overflow-y: auto; background: rgba(255,255,255,0.95);">
+                <h3
+                    style="margin-bottom: 1rem; color: #444; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Recent History</h3>
+                <div id="historyList">
+                    <div style="padding: 1rem; color: #888; text-align: center; font-size: 0.9rem;">Loading history...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.4rem; color: #444;">Extract Document Data</h2>
+                    <div id="offlineIndicator"
+                        style="background: #e7f9ed; color: #2e7d32; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
+                        AI: Ollama Ready
+                    </div>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Drag & drop your document here</div>
+                    <div class="upload-hint">or</div>
+                    <button class="btn" id="uploadBtn" style="margin-top: 1rem;">Choose File</button>
+                    <div class="upload-hint" style="margin-top: 0.5rem;">Supports PDF, PNG, JPG, DOCX, XLSX, TXT, MD
+                        (Max 50MB)</div>
+                    <input type="file" id="fileInput"
+                        accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp,.docx,.xlsx,.txt,.md,.csv">
+                </div>
+
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="status-text" id="statusText">AI is analyzing your document locally...</div>
+                </div>
+
+                <div class="result-container" id="resultContainer">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div class="success-badge">✓ Extraction & AI Analysis Complete</div>
+                    </div>
+
+                    <div class="metadata-grid" id="metadataGrid"></div>
+
+                    <div class="result-tabs">
+                        <button class="tab active" data-tab="summary">AI Summary</button>
+                        <button class="tab" data-tab="text">Raw Text</button>
+                        <button class="tab" data-tab="entities">Entities</button>
+                        <button class="tab" data-tab="json">JSON Response</button>
+                        <!-- API Tab Removed -->
+                    </div>
+
+                    <div id="summaryTab" class="tab-content active">
+                        <div id="summaryTabContent"></div>
+                    </div>
+
+                    <div id="textTab" class="tab-content">
+                        <pre class="text-content" id="textContent"></pre>
+                    </div>
+
+                    <div id="entitiesTab" class="tab-content">
+                        <div id="entitiesContent"></div>
+                    </div>
+
+                    <div id="jsonTab" class="tab-content">
+                        <button class="copy-btn" id="copyBtn">Copy JSON</button>
+                        <pre class="json-viewer" id="jsonContent"></pre>
+                    </div>
+                </div>
+
+                <div id="errorContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
