@@ -309,16 +309,61 @@
 
         <div class="cta-group">
             <a href="/app" class="btn-primary">Try Cloud Demo</a>
-            <a href="https://github.com/SharonCapable/pdf-extractor" class="btn-secondary">Download for Local Use</a>
+            <a href="https://github.com/SharonCapable/pdf-extractor/archive/refs/heads/main.zip"
+                class="btn-secondary">Download Zip for Local Use</a>
         </div>
 
         <div class="local-notice">
             <div class="local-icon">🏠</div>
-            <div>
-                <h4 style="color: var(--accent); margin-bottom: 4px; font-weight: 700;">100% Offline with Ollama</h4>
+            <div style="flex: 1;">
+                <h4 style="color: var(--accent); margin-bottom: 8px; font-weight: 700;">100% Offline with Ollama</h4>
                 <p style="font-size: 0.9rem; color: var(--text-dim);">The demo above uses cloud processing. To run this
-                    <b>completely offline</b> using your own hardware and Ollama, simply click "Download for Local Use"
-                    to get the full source code.</p>
+                    <b>completely offline</b> using your own hardware and Ollama, follow the setup guide below.</p>
+            </div>
+        </div>
+
+        <div id="setup-guide"
+            style="margin-top: 4rem; text-align: left; max-width: 800px; width: 100%; padding: 3rem; background: var(--panel); border: 1px solid var(--border); border-radius: 24px;">
+            <h3 style="font-family: 'Outfit'; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
+                <span style="color: var(--accent);">🛠️</span> Setup Intelligence Locally
+            </h3>
+
+            <div style="display: grid; gap: 2rem;">
+                <div style="display: flex; gap: 1.5rem;">
+                    <div
+                        style="font-weight: 800; color: var(--accent); font-family: 'Outfit'; font-size: 1.2rem; opacity: 0.5;">
+                        01</div>
+                    <div>
+                        <p style="font-weight: 700; margin-bottom: 5px;">Install Ollama</p>
+                        <p style="font-size: 0.9rem; color: var(--text-dim);">Download and install <a
+                                href="https://ollama.com"
+                                style="color: var(--accent); text-decoration: none;">Ollama</a> for your OS to enable
+                            local AI.</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem;">
+                    <div
+                        style="font-weight: 800; color: var(--accent); font-family: 'Outfit'; font-size: 1.2rem; opacity: 0.5;">
+                        02</div>
+                    <div>
+                        <p style="font-weight: 700; margin-bottom: 5px;">Pull Llama 3</p>
+                        <code
+                            style="display: block; background: #000; padding: 10px 15px; border-radius: 8px; font-size: 0.8rem; color: #00f2ff; margin-top: 10px;">ollama run llama3.2</code>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem;">
+                    <div
+                        style="font-weight: 800; color: var(--accent); font-family: 'Outfit'; font-size: 1.2rem; opacity: 0.5;">
+                        03</div>
+                    <div>
+                        <p style="font-weight: 700; margin-bottom: 5px;">Launch App</p>
+                        <p style="font-size: 0.9rem; color: var(--text-dim);">Extract the Zip, run <code
+                                style="color: #fff;">npm install</code> and then <code
+                                style="color: #fff;">npm start</code>. Your data never leaves your room.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
