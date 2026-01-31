@@ -3,6 +3,9 @@ const path = require('path');
 const BaseStorage = require('./base');
 const logger = require('../utils/logger');
 
+// Check if running on Vercel
+const isVercel = process.env.VERCEL === '1' || !!process.env.AWS_EXECUTION_ENV;
+
 /**
  * Local Filesystem Storage Backend
  */
@@ -10,15 +13,23 @@ class LocalStorage extends BaseStorage {
     constructor(config = {}) {
         super(config);
         this.name = 'local';
-        this.storagePath = config.local?.path || './storage';
+        this.storagePath = isVercel ? '/tmp/storage' : (config.local?.path || './storage');
     }
 
     async initialize() {
         try {
             logger.info(`Initializing local storage at: ${this.storagePath}`);
-            await fs.mkdir(this.storagePath, { recursive: true });
+            // Check if path is just /tmp or already exists to avoid unnecessary mkdir calls
+            if (this.storagePath !== '/tmp') {
+                await fs.mkdir(this.storagePath, { recursive: true });
+            }
             logger.info('Local storage initialized successfully');
         } catch (error) {
+            // If error is EROFS (Read-only file system), we log but don't crash if on Vercel
+            if (isVercel && error.code === 'EROFS') {
+                logger.warn('Read-only filesystem detected on Vercel, continuing with restricted mode');
+                return;
+            }
             logger.error('Failed to initialize local storage:', error);
             throw error;
         }

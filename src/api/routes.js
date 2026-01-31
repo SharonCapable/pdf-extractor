@@ -9,9 +9,12 @@ const config = require('../config');
 
 const router = express.Router();
 
+// Check if running on Vercel
+const isVercel = process.env.VERCEL === '1' || !!process.env.AWS_EXECUTION_ENV;
+
 // Configure multer for file uploads
 const upload = multer({
-    dest: 'uploads/',
+    dest: isVercel ? '/tmp/' : 'uploads/',
     limits: {
         fileSize: config.processing.maxFileSizeMB * 1024 * 1024
     },
@@ -40,15 +43,19 @@ const processor = new DocumentProcessor();
 let queueManager = null;
 
 // Initialize queue manager (optional, for async processing)
-(async () => {
-    try {
-        queueManager = new QueueManager();
-        await queueManager.initialize();
-        logger.info('Queue manager initialized for API');
-    } catch (error) {
-        logger.warn('Queue manager not available, using sync processing only:', error.message);
-    }
-})();
+if (!isVercel) {
+    (async () => {
+        try {
+            queueManager = new QueueManager();
+            await queueManager.initialize();
+            logger.info('Queue manager initialized for API');
+        } catch (error) {
+            logger.warn('Queue manager not available, using sync processing only:', error.message);
+        }
+    })();
+} else {
+    logger.info('Queue manager disabled (Vercel environment)');
+}
 
 /**
  * POST /api/extract

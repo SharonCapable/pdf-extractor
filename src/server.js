@@ -34,11 +34,11 @@ app.use(express.static('public'));
 
 // Main Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../public/landing.html'));
+    res.sendFile(path.join(process.cwd(), 'public/landing.html'));
 });
 
 app.get('/app', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../public/index.html'));
+    res.sendFile(path.join(process.cwd(), 'public/index.html'));
 });
 
 // API routes (with authentication)
@@ -67,15 +67,16 @@ app.get('/api-info', (req, res) => {
 // Error handling
 app.use(errorHandler);
 
-// Start server
-const PORT = config.server.port;
-
-app.listen(PORT, () => {
-    logger.info(`PRD Extractor API server running on port ${PORT}`);
-    logger.info(`Environment: ${config.server.env}`);
-    logger.info(`OCR Provider: ${config.ocr.provider}`);
-    logger.info(`Storage Backend: ${config.storage.backend}`);
-});
+// Start server - Only if not running as a serverless function (Vercel)
+if (process.env.VERCEL !== '1' && !process.env.AWS_EXECUTION_ENV) {
+    const PORT = config.server.port;
+    app.listen(PORT, () => {
+        logger.info(`PRD Extractor API server running on port ${PORT}`);
+        logger.info(`Environment: ${config.server.env}`);
+        logger.info(`OCR Provider: ${config.ocr.provider}`);
+        logger.info(`Storage Backend: ${config.storage.backend}`);
+    });
+}
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
